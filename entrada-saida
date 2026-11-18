@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Azôca | Gestão do Ateliê</title>
+<style>
+:root{--green:#344638;--green2:#526653;--olive:#78836a;--cream:#f6f4ee;--paper:#fffefa;--ink:#292d27;--muted:#777b70;--line:#e7e5dc;--red:#a34f45;--gold:#b18a55}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font:15px/1.5 Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:var(--green);color:#fff;padding:26px max(22px,calc((100% - 1180px)/2));display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{font-family:Georgia,serif;font-size:29px;letter-spacing:2px}.brand small{display:block;font:10px/1.5 system-ui;letter-spacing:3px;color:#d4ddcf}
+.header-note{font-size:12px;color:#dce3d8;text-align:right}
+main{max-width:1180px;margin:26px auto;padding:0 20px}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+nav button{border:1px solid var(--line);background:var(--paper);color:var(--muted);padding:11px 17px;border-radius:9px;cursor:pointer;font-weight:600}
+nav button.active{background:var(--green);color:white;border-color:var(--green)}
+h1{font:26px Georgia,serif;margin:0 0 5px}h2{font:20px Georgia,serif;margin:0 0 16px}
+.subtitle{color:var(--muted);margin:0 0 22px;font-size:13px}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:18px;box-shadow:0 4px 18px #27352608}
+.toolbar{display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+label{display:block;font-size:12px;font-weight:700;color:#62675d;margin-bottom:5px}
+input,select,textarea{width:100%;padding:10px 11px;border:1px solid #deded4;border-radius:8px;background:white;color:var(--ink);font:inherit;min-width:0}
+input:focus,select:focus,textarea:focus{outline:2px solid #aab59f;border-color:transparent}
+.field{min-width:0}.form-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.span2{grid-column:span 2}.span4{grid-column:span 4}
+.btn{border:0;border-radius:8px;padding:10px 15px;background:var(--green);color:white;font-weight:650;cursor:pointer}
+.btn:hover{background:var(--green2)}.btn.secondary{background:#eceee7;color:var(--green)}.btn.danger{background:#f6e9e6;color:var(--red)}.btn.small{padding:6px 9px;font-size:12px}
+.actions{display:flex;gap:7px;flex-wrap:wrap}.form-actions{display:flex;gap:8px;margin-top:16px}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.metric{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px}
+.metric span{display:block;color:var(--muted);font-size:12px}.metric strong{display:block;font:23px Georgia,serif;margin-top:5px}
+.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:720px}th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);font-size:13px}th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.6px}td strong{font-weight:650}
+.pill{display:inline-block;padding:4px 8px;border-radius:30px;background:#edf0e9;color:#4d604a;font-size:11px;font-weight:700}.pill.pending{background:#f7efdf;color:#8c6a32}.pill.done{background:#e8eee7;color:#496448}.pill.cancel{background:#f5e8e5;color:#98534a}
+.empty{text-align:center;color:var(--muted);padding:28px}
+.hidden{display:none!important}.month-filter{width:auto;min-width:170px}.category-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.category-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+footer{text-align:center;color:#92958b;font-size:11px;padding:25px}
+@media(max-width:760px){header{padding:20px}.header-note{display:none}.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.span4{grid-column:span 2}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}main{padding:0 13px;margin-top:18px}.panel{padding:15px}}
+@media(max-width:420px){.form-grid{grid-template-columns:1fr}.span2,.span4{grid-column:span 1}.cards{gap:8px}.metric{padding:12px}.metric strong{font-size:19px}}
+</style>
+</head>
+<body>
+<header><div class="brand">AZÔCA<small>GESTÃO DO ATELIÊ</small></div><div class="header-note">Pedidos · Despesas · Resultado mensal</div></header>
+<main>
+<nav>
+<button class="active" data-tab="pedidos">Pedidos</button><button data-tab="despesas">Despesas</button><button data-tab="financeiro">Financeiro</button><button data-tab="relatorios">Relatórios</button>
+</nav>
+
+<section id="pedidos" class="tab">
+<h1>Encomendas</h1><p class="subtitle">Registre os pedidos das clientes e acompanhe os valores a receber.</p>
+<div class="toolbar"><div class="field"><label for="filtroPedidos">Mês dos pedidos</label><input class="month-filter" type="month" id="filtroPedidos"></div><button class="btn" onclick="novoPedido()">＋ Novo pedido</button></div>
+<div class="panel hidden" id="formPedido">
+<h2 id="tituloPedido">Novo pedido</h2>
+<form id="pedidoForm"><input type="hidden" id="pedidoId">
+<div class="form-grid">
+<div class="field span2"><label for="cliente">Nome da cliente *</label><input id="cliente" required placeholder="Nome da cliente"></div>
+<div class="field"><label for="dataPedido">Data do pedido *</label><input id="dataPedido" type="date" required></div>
+<div class="field"><label for="tipoPedido">Tipo de pedido *</label><select id="tipoPedido" required><option value="Gesso">Gesso</option><option value="Vela">Vela</option><option value="Gesso e vela">Gesso e vela</option></select></div>
+<div class="field span2"><label for="descricaoPedido">Descrição</label><input id="descricaoPedido" placeholder="Produtos, quantidades ou detalhes"></div>
+<div class="field"><label for="valorPedido">Valor total (R$) *</label><input id="valorPedido" type="number" min="0" step=".01" required placeholder="0,00"></div>
+<div class="field"><label for="recebidoPedido">Valor já recebido (R$)</label><input id="recebidoPedido" type="number" min="0" step=".01" value="0"></div>
+<div class="field span2"><label for="statusPedido">Status</label><select id="statusPedido"><option>Aguardando</option><option>Em produção</option><option>Concluído</option><option>Entregue</option><option>Cancelado</option></select></div>
+</div><div class="form-actions"><button class="btn" type="submit">Salvar pedido</button><button class="btn secondary" type="button" onclick="fecharPedido()">Cancelar</button></div>
+</form></div>
+<div class="panel"><div class="toolbar"><h2>Pedidos cadastrados</h2><span id="contadorPedidos" class="subtitle"></span></div><div class="table-wrap"><table><thead><tr><th>Data</th><th>Cliente</th><th>Tipo</th><th>Status</th><th>Total</th><th>Recebido</th><th>Pendente</th><th>Ações</th></tr></thead><tbody id="listaPedidos"></tbody></table></div></div>
+</section>
+
+<section id="despesas" class="tab hidden">
+<h1>Despesas e materiais</h1><p class="subtitle">Lance cada compra e acompanhe os gastos por categoria e por mês.</p>
+<div class="toolbar"><div class="field"><label for="filtroDespesas">Mês das despesas</label><input class="month-filter" type="month" id="filtroDespesas"></div><button class="btn" onclick="novaDespesa()">＋ Nova despesa</button></div>
+<div class="panel hidden" id="formDespesa"><h2 id="tituloDespesa">Nova despesa</h2>
+<form id="despesaForm"><input type="hidden" id="despesaId"><div class="form-grid">
+<div class="field"><label for="dataDespesa">Data *</label><input id="dataDespesa" type="date" required></div>
+<div class="field span2"><label for="categoriaDespesa">Categoria *</label><select id="categoriaDespesa" required></select></div>
+<div class="field"><label for="valorDespesa">Valor (R$) *</label><input id="valorDespesa" type="number" min="0" step=".01" required placeholder="0,00"></div>
+<div class="field span4"><label for="descricaoDespesa">Descrição / fornecedor</label><input id="descricaoDespesa" placeholder="Ex.: compra de 2 kg de gesso"></div>
+</div><div class="form-actions"><button class="btn" type="submit">Salvar despesa</button><button class="btn secondary" type="button" onclick="fecharDespesa()">Cancelar</button></div></form></div>
+<div class="cards" id="resumoDespesas"></div>
+<div class="panel"><h2>Despesas lançadas</h2><div class="table-wrap"><table><thead><tr><th>Data</th><th>Categoria</th><th>Descrição</th><th>Valor</th><th>Ações</th></tr></thead><tbody id="listaDespesas"></tbody></table></div></div>
+</section>
+
+<section id="financeiro" class="tab hidden">
+<h1>Visão financeira</h1><p class="subtitle">Acompanhe as vendas, os recebimentos e os gastos do ateliê.</p>
+<div class="toolbar"><div class="field"><label for="filtroFinanceiro">Mês de referência</label><input class="month-filter" type="month" id="filtroFinanceiro"></div></div>
+<div class="cards" id="metricasFinanceiras"></div>
+<div class="panel"><h2>Resumo do mês</h2><div id="resumoFinanceiro"></div></div>
+<p class="subtitle">Resultado simples = valores recebidos no mês dos pedidos menos despesas lançadas no mês. Não inclui impostos, taxas ou custos ainda não cadastrados.</p>
+</section>
+
+<section id="relatorios" class="tab hidden">
+<h1>Relatórios</h1><p class="subtitle">Consulte o histórico e veja onde estão concentradas as despesas.</p>
+<div class="toolbar"><div class="field"><label for="filtroRelatorios">Mês do relatório</label><input class="month-filter" type="month" id="filtroRelatorios"></div><button class="btn secondary" onclick="exportarCSV()">Exportar dados (CSV)</button></div>
+<div class="panel"><h2>Gastos por categoria</h2><div id="relatorioCategorias" class="category-list"></div></div>
+<div class="panel"><h2>Pedidos por tipo</h2><div id="relatorioTipos" class="category-list"></div></div>
+</section>
+</main>
+<footer>AZÔCA · Gestão do Ateliê <span id="ano"></span> · Seus dados ficam salvos neste navegador.</footer>
+<script>
+const CATEGORIAS=['Embalagem','Gesso','Cera de vela','Essência','Molde de silicone','Impermeabilizante','Cortiça','Spray brilho','Pavios e ilhós','Corantes gesso','Corantes velas'];
+const hoje=new Date(), mesAtual=hoje.getFullYear()+'-'+String(hoje.getMonth()+1).padStart(2,'0'), dataHoje=hoje.toISOString().slice(0,10);
+let pedidos=JSON.parse(localStorage.getItem('azoca_pedidos')||'[]');
+let despesas=JSON.parse(localStorage.getItem('azoca_despesas')||'[]');
+const brl=v=>(Number(v)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const porMes=(data,mes)=>data.slice(0,7)===mes;
+const salvar=()=>{localStorage.setItem('azoca_pedidos',JSON.stringify(pedidos));localStorage.setItem('azoca_despesas',JSON.stringify(despesas));};
+const el=id=>document.getElementById(id);
+function init(){
+ ['filtroPedidos','filtroDespesas','filtroFinanceiro','filtroRelatorios'].forEach(id=>{el(id).value=mesAtual;el(id).addEventListener('change',renderTudo)});
+ el('ano').textContent=hoje.getFullYear();
+ el('categoriaDespesa').innerHTML=CATEGORIAS.map(c=>`<option>${c}</option>`).join('');
+ document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.tab').forEach(s=>s.classList.toggle('hidden',s.id!==b.dataset.tab));renderTudo()}));
+ el('pedidoForm').addEventListener('submit',salvarPedido);el('despesaForm').addEventListener('submit',salvarDespesa);renderTudo();
+}
+function novoPedido(){el('pedidoForm').reset();el('pedidoId').value='';el('dataPedido').value=dataHoje;el('recebidoPedido').value=0;el('tituloPedido').textContent='Novo pedido';el('formPedido').classList.remove('hidden');}
+function fecharPedido(){el('formPedido').classList.add('hidden')}
+function salvarPedido(e){e.preventDefault();const id=el('pedidoId').value;const item={id:id||String(Date.now()),cliente:el('cliente').value.trim(),data:el('dataPedido').value,tipo:el('tipoPedido').value,descricao:el('descricaoPedido').value.trim(),valor:Number(el('valorPedido').value),recebido:Number(el('recebidoPedido').value||0),status:el('statusPedido').value};if(item.recebido>item.valor){alert('O valor recebido não pode ser maior que o valor total.');return}if(id)pedidos=pedidos.map(x=>x.id===id?item:x);else pedidos.push(item);salvar();fecharPedido();renderTudo();}
+function editarPedido(id){const p=pedidos.find(x=>x.id===id);if(!p)return;novoPedido();el('pedidoId').value=p.id;el('cliente').value=p.cliente;el('dataPedido').value=p.data;el('tipoPedido').value=p.tipo;el('descricaoPedido').value=p.descricao;el('valorPedido').value=p.valor;el('recebidoPedido').value=p.recebido;el('statusPedido').value=p.status;el('tituloPedido').textContent='Editar pedido';}
+function excluirPedido(id){if(confirm('Excluir este pedido?')){pedidos=pedidos.filter(x=>x.id!==id);salvar();renderTudo()}}
+function novaDespesa(){el('despesaForm').reset();el('despesaId').value='';el('dataDespesa').value=dataHoje;el('tituloDespesa').textContent='Nova despesa';el('formDespesa').classList.remove('hidden')}
+function fecharDespesa(){el('formDespesa').classList.add('hidden')}
+function salvarDespesa(e){e.preventDefault();const id=el('despesaId').value;const item={id:id||String(Date.now()),data:el('dataDespesa').value,categoria:el('categoriaDespesa').value,valor:Number(el('valorDespesa').value),descricao:el('descricaoDespesa').value.trim()};if(id)despesas=despesas.map(x=>x.id===id?item:x);else despesas.push(item);salvar();fecharDespesa();renderTudo();}
+function editarDespesa(id){const d=despesas.find(x=>x.id===id);if(!d)return;novaDespesa();el('despesaId').value=d.id;el('dataDespesa').value=d.data;el('categoriaDespesa').value=d.categoria;el('valorDespesa').value=d.valor;el('descricaoDespesa').value=d.descricao;el('tituloDespesa').textContent='Editar despesa'}
+function excluirDespesa(id){if(confirm('Excluir esta despesa?')){despesas=despesas.filter(x=>x.id!==id);salvar();renderTudo()}}
+function statusClass(s){return s==='Entregue'||s==='Concluído'?'done':s==='Cancelado'?'cancel':'pending'}
+function renderPedidos(){const mes=el('filtroPedidos').value;const lista=pedidos.filter(p=>porMes(p.data,mes)).sort((a,b)=>b.data.localeCompare(a.data));el('contadorPedidos').textContent=lista.length+' pedido(s)';el('listaPedidos').innerHTML=lista.length?lista.map(p=>`<tr><td>${new Date(p.data+'T12:00:00').toLocaleDateString('pt-BR')}</td><td><strong>${esc(p.cliente)}</strong><br><span style="color:#888">${esc(p.descricao)}</span></td><td>${esc(p.tipo)}</td><td><span class="pill ${statusClass(p.status)}">${esc(p.status)}</span></td><td>${brl(p.valor)}</td><td>${brl(p.recebido)}</td><td>${brl(p.valor-p.recebido)}</td><td><div class="actions"><button class="btn small secondary" onclick="editarPedido('${p.id}')">Editar</button><button class="btn small danger" onclick="excluirPedido('${p.id}')">Excluir</button></div></td></tr>`).join(''):'<tr><td colspan="8" class="empty">Nenhum pedido neste mês.</td></tr>'}
+function renderDespesas(){const mes=el('filtroDespesas').value;const lista=despesas.filter(d=>porMes(d.data,mes)).sort((a,b)=>b.data.localeCompare(a.data));el('listaDespesas').innerHTML=lista.length?lista.map(d=>`<tr><td>${new Date(d.data+'T12:00:00').toLocaleDateString('pt-BR')}</td><td>${esc(d.categoria)}</td><td>${esc(d.descricao||'—')}</td><td><strong>${brl(d.valor)}</strong></td><td><div class="actions"><button class="btn small secondary" onclick="editarDespesa('${d.id}')">Editar</button><button class="btn small danger" onclick="excluirDespesa('${d.id}')">Excluir</button></div></td></tr>`).join(''):'<tr><td colspan="5" class="empty">Nenhuma despesa neste mês.</td></tr>';const total=lista.reduce((s,d)=>s+d.valor,0);el('resumoDespesas').innerHTML=`<div class="metric"><span>Total de despesas</span><strong>${brl(total)}</strong></div><div class="metric"><span>Lançamentos</span><strong>${lista.length}</strong></div>`}
+function metric(label,value){return `<div class="metric"><span>${label}</span><strong>${brl(value)}</strong></div>`}
+function renderFinanceiro(){const mes=el('filtroFinanceiro').value;const ps=pedidos.filter(p=>porMes(p.data,mes)&&p.status!=='Cancelado');const ds=despesas.filter(d=>porMes(d.data,mes));const vendido=ps.reduce((s,p)=>s+p.valor,0),recebido=ps.reduce((s,p)=>s+p.recebido,0),pendente=ps.reduce((s,p)=>s+p.valor-p.recebido,0),gasto=ds.reduce((s,d)=>s+d.valor,0);el('metricasFinanceiras').innerHTML=metric('Vendido no mês',vendido)+metric('Recebido',recebido)+metric('A receber',pendente)+metric('Despesas',gasto);el('resumoFinanceiro').innerHTML=`<div class="category-row"><span>Recebimentos registrados</span><strong>${brl(recebido)}</strong></div><div class="category-row"><span>Despesas registradas</span><strong>${brl(gasto)}</strong></div><div class="category-row"><span><strong>Resultado do mês</strong></span><strong style="color:${recebido-gasto>=0?'#496448':'#a34f45'}">${brl(recebido-gasto)}</strong></div><div class="category-row"><span>Pedidos ativos</span><strong>${ps.length}</strong></div>`}
+function renderRelatorios(){const mes=el('filtroRelatorios').value,ds=despesas.filter(d=>porMes(d.data,mes)),ps=pedidos.filter(p=>porMes(p.data,mes)&&p.status!=='Cancelado');el('relatorioCategorias').innerHTML=CATEGORIAS.map(c=>{const v=ds.filter(d=>d.categoria===c).reduce((s,d)=>s+d.valor,0);return `<div class="category-row"><span>${c}</span><strong>${brl(v)}</strong></div>`}).join('');const tipos=['Gesso','Vela','Gesso e vela'];el('relatorioTipos').innerHTML=tipos.map(t=>{const arr=ps.filter(p=>p.tipo===t);return `<div class="category-row"><span>${t} (${arr.length})</span><strong>${brl(arr.reduce((s,p)=>s+p.valor,0))}</strong></div>`}).join('')}
+function renderTudo(){renderPedidos();renderDespesas();renderFinanceiro();renderRelatorios()}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function exportarCSV(){const rows=[['Tipo','Data','Nome/Categoria','Descrição','Valor total','Recebido','Status']];pedidos.forEach(p=>rows.push(['Pedido',p.data,p.cliente,p.tipo+' - '+p.descricao,p.valor,p.recebido,p.status]));despesas.forEach(d=>rows.push(['Despesa',d.data,d.categoria,d.descricao,d.valor,'','']));const csv='\ufeff'+rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));a.download='azoca-gestao-'+mesAtual+'.csv';a.click();URL.revokeObjectURL(a.href)}
+init();
+</script>
+</body>
+</html>
